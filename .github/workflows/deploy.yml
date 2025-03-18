@@ -1,0 +1,46 @@
+name: 🚀 Deploy FastAPI Docker App to Server
+
+on:
+  push:
+    branches:
+      - main  # deploy when you push to main
+
+jobs:
+  deploy:
+    name: Deploy to Server
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository code
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Set up SSH key for connecting to your server
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_KEY }}
+
+      # SSH into server and deploy
+      - name: SSH & Deploy on Server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+            echo "✅ Logged into server!"
+
+            # Go to the app directory (adjust the path as needed)
+            cd /home/${{ secrets.SERVER_USER }}/AutoScout24_Scraper_API
+
+            # Pull the latest code (make sure it's a git repo or scp the files in another step)
+            git fetch origin
+            git reset --hard origin/main
+
+            # Build and restart the containers
+            sudo docker stop $(sudo docker ps -aq)
+            sudo docker build -t autoscraper_api .
+            sudo docker run -d -p 8000:8000 autoscraper_api
+
+            # Optional: Clean up old dangling images
+            sudo docker image prune -f
+
+            echo "🚀 Deployment finished!"
+          EOF

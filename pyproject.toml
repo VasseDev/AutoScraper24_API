@@ -1,0 +1,24 @@
+[project]
+name = "autoscraper24-api"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Pietro Vassena",email = "pietro@vassena.dev"}
+]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "uvicorn (>=0.34.0,<0.35.0)",
+    "fastapi (>=0.115.11,<0.116.0)",
+    "pydantic (>=2.10.6,<3.0.0)",
+    "requests (>=2.32.3,<3.0.0)",
+    "bs4 (>=0.0.2,<0.0.3)"
+]
+
+[tool.poetry]
+packages = [{include = "autoscraper24_api", from = "src"}]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
